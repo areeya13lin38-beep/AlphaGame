@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>เกมเลือกคำของตัวอักษร</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(180deg, #eaf4ff 0%, #f6f8fc 100%);
+    color: #1f2937;
+    display: flex;
+    justify-content: center;
+    padding: 28px 16px;
+  }
+  .container {
+    width: 100%;
+    max-width: 1120px;
+    background: #fff;
+    border-radius: 28px;
+    padding: 34px 38px 28px;
+    box-shadow: 0 18px 45px rgba(37, 99, 235, 0.08);
+  }
+  h1 {
+    margin: 0;
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 800;
+    color: #1e293b;
+  }
+  .subtitle {
+    text-align: center;
+    margin-top: 10px;
+    color: #6b7280;
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 30px;
+  }
+  .field label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: #374151;
+    font-size: 1rem;
+  }
+  .field input {
+    width: 100%;
+    padding: 18px 20px;
+    border-radius: 18px;
+    border: 2px solid #dbe3f0;
+    background: #fff;
+    font-size: 1rem;
+  }
+  .pills {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin: 26px 0 22px;
+  }
+  .pill {
+    min-width: 190px;
+    text-align: center;
+    background: #eef3ff;
+    color: #2b57d9;
+    border-radius: 999px;
+    padding: 16px 18px;
+    font-size: 1.05rem;
+    font-weight: 800;
+  }
+  .game-panel {
+    border: 3px dashed #d5e6ff;
+    border-radius: 28px;
+    padding: 30px 26px 26px;
+    background: #fbfdff;
+  }
+  .main-box {
+    background: #f4f8ff;
+    border-radius: 24px;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 26px;
+  }
+  .status-text {
+    font-size: 1.15rem;
+    color: #6b7280;
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+  .word {
+    font-size: 5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    user-select: none;
+    word-break: break-word;
+  }
+  .hint {
+    margin-top: 14px;
+    color: #64748b;
+    font-size: 1rem;
+  }
+  .answers {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 22px;
+  }
+  .answer-btn {
+    border: none;
+    border-radius: 18px;
+    padding: 16px 12px;
+    background: #ffffff;
+    border: 2px solid #dbe7fb;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #334155;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  }
+  .answer-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 22px rgba(37, 99, 235, 0.12);
+    background: #f8fbff;
+  }
+  .answer-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 26px;
+  }
+  .btn {
+    border: none;
+    border-radius: 18px;
+    padding: 18px 26px;
+    font-size: 1.15rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .btn-primary { background: #2f63ea; color: white; }
+  .btn-secondary { background: #e5e7eb; color: #111827; }
+  .btn-ghost { background: #eef2f7; color: #111827; }
+  .feedback {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 700;
+    min-height: 28px;
+    margin-top: 10px;
+  }
+  .ok { color: #15803d; }
+  .bad { color: #dc2626; }
+  .summary {
+    display: none;
+    margin-top: 24px;
+  }
+  .summary-title {
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: #1f2937;
+  }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+  .card {
+    background: #fff;
+    border: 2px solid #dbe7fb;
+    border-radius: 22px;
+    padding: 22px 24px;
+  }
+  .card .label {
+    font-size: 0.98rem;
+    color: #6b7280;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .card .value {
+    font-size: 2rem;
+    color: #2b57d9;
+    font-weight: 800;
+  }
+  .summary-note {
+    margin-top: 18px;
+    background: #f2f5fb;
+    border-radius: 18px;
+    padding: 18px 20px;
+    font-size: 1rem;
+    line-height: 1.75;
+    color: #374151;
+  }
+  .participant-line {
+    text-align: center;
+    margin-top: 16px;
+    color: #6b7280;
+    font-size: 0.98rem;
+  }
+  .footer-note {
+    text-align: center;
+    color: #6b7280;
+    margin-top: 16px;
+    line-height: 1.7;
+    font-size: 0.98rem;
+  }
+  @media (max-width: 900px) {
+    .form-grid, .summary-grid { grid-template-columns: 1fr; }
+    .answers { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 2.2rem; }
+    .word { font-size: 3.4rem; }
+  }
+  @media (max-width: 560px) {
+    .container { padding: 22px 16px; }
+    .answers { grid-template-columns: 1fr 1fr; }
+    .pill { min-width: 140px; }
+    .word { font-size: 2.7rem; }
+    .btn { width: 100%; }
+    .controls { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>เกมเลือกสีของตัวอักษร</h1>
+    <div class="subtitle">
+      ดูคำที่ปรากฏ แล้วเลือกคำตอบให้ถูก<br>
+      เวอร์ชันนี้ตอบตาม <strong>คำที่อ่านได้</strong> ไม่ใช่สีของตัวอักษร
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="playerName">ชื่อผู้เข้าร่วม</label>
+        <input id="playerName" type="text" placeholder="กรอกชื่อผู้เข้าร่วม" />
+      </div>
+      <div class="field">
+        <label for="playerId">รหัสผู้เข้าร่วม</label>
+        <input id="playerId" type="text" placeholder="กรอกรหัส" />
+      </div>
+      <div class="field">
+        <label for="testDate">วันที่ประเมิน</label>
+        <input id="testDate" type="date" />
+      </div>
+    </div>
+
+    <div class="pills">
+      <div class="pill">เวลา: <span id="timeDisplay">30</span> วินาที</div>
+      <div class="pill">คะแนน: <span id="scoreDisplay">0</span></div>
+      <div class="pill">ข้อที่: <span id="roundDisplay">0</span></div>
+    </div>
+
+    <div class="game-panel">
+      <div class="main-box" id="mainBox">
+        <div class="status-text">กดเริ่มเกมเพื่อเริ่มเล่น</div>
+        <div class="word" id="wordDisplay">เริ่มเกม</div>
+        <div class="hint">ให้ตอบตามคำที่อ่านได้ เช่น เห็นคำว่า “เหลือง” แม้ตัวอักษรเป็นสีเขียว ให้ตอบ “เหลือง”</div>
+      </div>
+
+      <div class="answers" id="answers"></div>
+      <div class="feedback" id="feedback"></div>
+
+      <div class="summary" id="summarySection">
+        <div class="summary-title">หมดเวลา!</div>
+        <div class="summary-grid">
+          <div class="card"><div class="label">คะแนนรวม</div><div class="value" id="finalScore">0 คะแนน</div></div>
+          <div class="card"><div class="label">จำนวนข้อที่ตอบทั้งหมด</div><div class="value" id="finalTotal">0 ข้อ</div></div>
+          <div class="card"><div class="label">ตอบถูก / ตอบผิด</div><div class="value" id="finalCorrectWrong">0 / 0</div></div>
+          <div class="card"><div class="label">ความแม่นยำ</div><div class="value" id="finalAccuracy">0%</div></div>
+          <div class="card"><div class="label">เวลาที่ใช้ทั้งหมด</div><div class="value" id="finalTime">30.00 วินาที</div></div>
+          <div class="card"><div class="label">เวลาเฉลี่ยต่อข้อ</div><div class="value" id="finalAvg">0.00 วินาที</div></div>
+        </div>
+        <div class="summary-note" id="summaryNote"></div>
+        <div class="participant-line" id="participantLine"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-primary" onclick="startGame()">เริ่มเกม</button>
+      <button class="btn btn-secondary" onclick="restartGame()">เล่นใหม่</button>
+      <button class="btn btn-ghost" onclick="copySummary()">คัดลอกผลสรุป</button>
+    </div>
+
+    <div class="footer-note">
+      ไฟล์นี้เปิดในเบราว์เซอร์ได้เลย ทั้งมือถือและคอมพิวเตอร์<br>
+      ไม่มีการเชื่อมต่อ Google Sheets หรือส่งข้อมูลออกภายนอก
+    </div>
+  </div>
+
+<script>
+  const COLORS = [
+    { name: 'แดง', color: '#e53935' },
+    { name: 'น้ำเงิน', color: '#1e88e5' },
+    { name: 'เขียว', color: '#43a047' },
+    { name: 'เหลือง', color: '#fbc02d' },
+    { name: 'ดำ', color: '#111111' },
+    { name: 'ส้ม', color: '#fb8c00' },
+    { name: 'ชมพู', color: '#ec4899' }
+  ];
+
+  const TOTAL_TIME = 30;
+  let timeLeft = TOTAL_TIME;
+  let score = 0;
+  let round = 0;
+  let correct = 0;
+  let wrong = 0;
+  let timer = null;
+  let currentQuestion = null;
+  let isPlaying = false;
+
+  const timeDisplay = document.getElementById('timeDisplay');
+  const scoreDisplay = document.getElementById('scoreDisplay');
+  const roundDisplay = document.getElementById('roundDisplay');
+  const wordDisplay = document.getElementById('wordDisplay');
+  const answersEl = document.getElementById('answers');
+  const feedback = document.getElementById('feedback');
+  const summarySection = document.getElementById('summarySection');
+  const mainBox = document.getElementById('mainBox');
+  const testDateInput = document.getElementById('testDate');
+
+  if (!testDateInput.value) {
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    testDateInput.value = `${yyyy}-${mm}-${dd}`;
+  }
+
+  function shuffle(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function updateStats() {
+    timeDisplay.textContent = timeLeft;
+    scoreDisplay.textContent = score;
+    roundDisplay.textContent = round;
+  }
+
+  function buildQuestion() {
+    const wordItem = COLORS[Math.floor(Math.random() * COLORS.length)];
+    let colorItem = COLORS[Math.floor(Math.random() * COLORS.length)];
+    while (colorItem.name === wordItem.name) {
+      colorItem = COLORS[Math.floor(Math.random() * COLORS.length)];
+    }
+    return { correctWord: wordItem.name, fontColor: colorItem.color };
+  }
+
+  function renderQuestion() {
+    mainBox.innerHTML = `
+      <div class="status-text">เลือกคำที่อ่านได้</div>
+      <div class="word" id="wordDisplay" style="color:${currentQuestion.fontColor}">${currentQuestion.correctWord}</div>
+      <div class="hint">ตอบตามคำ ไม่ใช่สีของตัวอักษร</div>
+    `;
+
+    const options = shuffle(COLORS.map(c => c.name));
+    answersEl.innerHTML = '';
+    options.forEach(option => {
+      const btn = document.createElement('button');
+      btn.className = 'answer-btn';
+      btn.textContent = option;
+      btn.onclick = () => submitAnswer(option);
+      answersEl.appendChild(btn);
+    });
+  }
+
+  function nextQuestion() {
+    if (!isPlaying) return;
+    round += 1;
+    currentQuestion = buildQuestion();
+    renderQuestion();
+    updateStats();
+    feedback.textContent = '';
+    feedback.className = 'feedback';
+  }
+
+  function startGame() {
+    clearInterval(timer);
+    timeLeft = TOTAL_TIME;
+    score = 0;
+    round = 0;
+    correct = 0;
+    wrong = 0;
+    isPlaying = true;
+    summarySection.style.display = 'none';
+    feedback.textContent = '';
+    feedback.className = 'feedback';
+
+    timer = setInterval(() => {
+      timeLeft -= 1;
+      updateStats();
+      if (timeLeft <= 0) {
+        endGame();
+      }
+    }, 1000);
+
+    nextQuestion();
+  }
+
+  function disableAnswers() {
+    document.querySelectorAll('.answer-btn').forEach(btn => btn.disabled = true);
+  }
+
+  function submitAnswer(answer) {
+    if (!isPlaying) return;
+    disableAnswers();
+
+    if (answer === currentQuestion.correctWord) {
+      score += 1;
+      correct += 1;
+      feedback.textContent = 'ตอบถูก';
+      feedback.className = 'feedback ok';
+    } else {
+      wrong += 1;
+      feedback.textContent = `ตอบผิด คำตอบที่ถูกคือ “${currentQuestion.correctWord}”`;
+      feedback.className = 'feedback bad';
+    }
+
+    updateStats();
+
+    setTimeout(() => {
+      if (isPlaying) nextQuestion();
+    }, 250);
+  }
+
+  function endGame() {
+    clearInterval(timer);
+    isPlaying = false;
+    timeLeft = 0;
+    updateStats();
+    disableAnswers();
+    showSummary();
+  }
+
+  function restartGame() {
+    startGame();
+  }
+
+  function formatDateThai(isoDate) {
+    if (!isoDate) return '-';
+    const [y, m, d] = isoDate.split('-');
+    return `${d}/${m}/${y}`;
+  }
+
+  function showSummary() {
+    const totalAnswered = correct + wrong;
+    const accuracy = totalAnswered > 0 ? ((correct / totalAnswered) * 100) : 0;
+    const avgTime = totalAnswered > 0 ? (TOTAL_TIME / totalAnswered) : 0;
+
+    document.getElementById('finalScore').textContent = `${score} คะแนน`;
+    document.getElementById('finalTotal').textContent = `${totalAnswered} ข้อ`;
+    document.getElementById('finalCorrectWrong').textContent = `${correct} / ${wrong}`;
+    document.getElementById('finalAccuracy').textContent = `${accuracy.toFixed(2)}%`;
+    document.getElementById('finalTime').textContent = `${TOTAL_TIME.toFixed(2)} วินาที`;
+    document.getElementById('finalAvg').textContent = `${avgTime.toFixed(2)} วินาที`;
+
+    let level = '';
+    if (accuracy >= 85) level = 'ดีมาก';
+    else if (accuracy >= 70) level = 'ดี';
+    else if (accuracy >= 50) level = 'ปานกลาง';
+    else level = 'ควรฝึกเพิ่ม';
+
+    const speed = avgTime <= 1.5 ? 'เร็ว' : avgTime <= 2.5 ? 'ปานกลาง' : 'ค่อนข้างช้า';
+
+    document.getElementById('summaryNote').textContent =
+      `สรุปเบื้องต้น: ผู้เล่นได้คะแนน ${score} คะแนน จากการตอบทั้งหมด ${totalAnswered} ข้อ ` +
+      `ตอบถูก ${correct} ข้อ ตอบผิด ${wrong} ข้อ มีความแม่นยำ ${accuracy.toFixed(2)}% ` +
+      `และใช้เวลาเฉลี่ย ${avgTime.toFixed(2)} วินาทีต่อข้อ โดยภาพรวมความแม่นยำอยู่ในระดับ${level} ` +
+      `และตอบได้ในระดับความเร็ว${speed} เหมาะสำหรับใช้สรุปรายบุคคลหรือเปรียบเทียบก่อน–หลังเข้าร่วมกิจกรรมได้`;
+
+    const playerName = document.getElementById('playerName').value || '-';
+    const playerId = document.getElementById('playerId').value || '-';
+    const testDate = formatDateThai(document.getElementById('testDate').value);
+    document.getElementById('participantLine').textContent = `ผู้เข้าร่วม: ${playerName} | รหัส: ${playerId} | วันที่ประเมิน: ${testDate}`;
+
+    summarySection.style.display = 'block';
+    mainBox.innerHTML = `
+      <div class="status-text">จบเกมแล้ว</div>
+      <div class="word" style="color:#1f2937;font-size:4rem;">หมดเวลา!</div>
+      <div class="hint">กด “เล่นใหม่” เพื่อเริ่มรอบใหม่</div>
+    `;
+  }
+
+  async function copySummary() {
+    const playerName = document.getElementById('playerName').value || '-';
+    const playerId = document.getElementById('playerId').value || '-';
+    const testDate = formatDateThai(document.getElementById('testDate').value);
+    const summaryText = [
+      `ชื่อผู้เข้าร่วม: ${playerName}`,
+      `รหัสผู้เข้าร่วม: ${playerId}`,
+      `วันที่ประเมิน: ${testDate}`,
+      `คะแนน: ${document.getElementById('finalScore').textContent}`,
+      `จำนวนข้อที่ตอบทั้งหมด: ${document.getElementById('finalTotal').textContent}`,
+      `ตอบถูก/ตอบผิด: ${document.getElementById('finalCorrectWrong').textContent}`,
+      `ความแม่นยำ: ${document.getElementById('finalAccuracy').textContent}`,
+      `เวลาที่ใช้ทั้งหมด: ${document.getElementById('finalTime').textContent}`,
+      `เวลาเฉลี่ยต่อข้อ: ${document.getElementById('finalAvg').textContent}`,
+      `${document.getElementById('summaryNote').textContent}`
+    ].join('\n');
+
+    try {
+      await navigator.clipboard.writeText(summaryText);
+      feedback.textContent = 'คัดลอกผลสรุปแล้ว';
+      feedback.className = 'feedback ok';
+    } catch (e) {
+      feedback.textContent = 'ไม่สามารถคัดลอกอัตโนมัติได้';
+      feedback.className = 'feedback bad';
+    }
+  }
+
+  updateStats();
+</script>
+</body>
+</html>
